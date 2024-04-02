@@ -1,0 +1,61 @@
+{% extends 'layout.html' %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static',
+                    filename='assets/css/analyze.css' ) }}">
+{% endblock %}
+
+{% block title %}
+Analyze
+{% endblock %}
+
+{% block content %}
+<main class="container d-flex flex-column justify-content-center align-items-center">
+    <form class="needs-validation d-flex justify-content-center align-items-center" action="/analyze" method="post"
+        novalidate enctype="multipart/form-data">
+        <div class="row align-items-end">
+            <div class="col-auto">
+                <label for="formFile" class="form-label">Upload file for analysis</label>
+                <input class="form-control border border-primary" type="file" name="file" required>
+                <div class="invalid-feedback position-fixed">
+                    Please select a file.
+                </div>
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary">Send</button>
+            </div>
+        </div>
+    </form>
+    {% if result %}
+
+    <div id="results" class="mt-5 fs-2 fw-bold "></div>
+    <div class="alert alert-dismissible alert-success">
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        This is an image of: <strong> {{ result }}</strong>
+    </div>
+
+    {% endif %}
+</main>
+<script>
+    (function () {
+        'use strict'
+
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        var forms = document.querySelectorAll('.needs-validation')
+
+        // Loop over them and prevent submission
+        Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+
+                    form.classList.add('was-validated')
+                }, false)
+            })
+    })()
+</script>
+
+{% endblock %}

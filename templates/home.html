@@ -1,0 +1,104 @@
+{% extends 'layout.html' %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static',
+                    filename='assets/css/home.css' ) }}">
+{% endblock %}
+
+{% block title %}
+MDuML
+{% endblock %}
+
+
+{% block content %}
+<section class="container-fluid d-flex flex-column justify-content-center align-items-center">
+    <img class="mb-3 " width="200" src={{ url_for('static', filename='assets/logo/logo-no-background.png' ) }} alt="">
+    <h1 id="message" class="text-center" data-value="Welcome, Malware Analyst">
+        Welcome, Malware Analyst</h1>
+</section>
+<section class="container-fluid pt-5">
+    <h2 class="text-center mb-5">Overview</h2>
+    <div id="overview-desc"
+        class="d-flex flex-column align-items-center text-center flex-md-row align-items-md-start text-md-start justify-content-md-center px-md-15">
+        <img width="300" src={{ url_for('static', filename='assets/illustrations/data-theft-new.png' ) }} alt="">
+        <div>
+            <p>Face it - as cool as it sounds to spend hours manually analyzing and nitpicking every possibly malicious
+                file
+                you
+                encounter, it can get tedious and quite frankly boring. That is without mentioning the huge companies
+                that
+                receive hundreds of thousands of file uploads every year, each of which could potentially harm or bring
+                down their system all together.</p>
+            <div class="text-center btn btn-lg btn-primary w-100 pe-none">WE OFFER THE SOLUTION</div>
+        </div>
+    </div>
+</section>
+<section class="container-fluid pt-5">
+    <h2 class="text-center mb-5">Benefits</h2>
+    <div>
+        <div class="row justify-content-center">
+            <div class="col-sm-3 card-one">
+                <div class="card text-white bg-primary mb-3" style="max-width: 100%;">
+                    <div class="card-header">Simplicity</div>
+                    <div class="card-body">
+                        <h4 class="card-title">Ease Of Use</h4>
+                        <p class="card-text">With a number of easy to follow steps you'll be able to analyze any
+                            executable.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3 card-two">
+                <div class="card text-white bg-primary mb-3" style="max-width: 100%;">
+                    <div class="card-header">Accuracy</div>
+                    <div class="card-body">
+                        <h4 class="card-title">Machine Learning </h4>
+                        <p class="card-text">Using our fine-tuned ML model, you will obtain near-perfect result for
+                            your analysis.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-sm-3 card-three">
+                <div class="card text-white bg-primary mb-3" style="max-width: 100%;">
+                    <div class="card-header">Security</div>
+                    <div class="card-body">
+                        <h4 class="card-title">Static And Dynamic Analysis</h4>
+                        <p class="card-text">We offer a most thorough analysis by executing the file in a simulated
+                            environment and monitoring its behavior.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let message = document.getElementById("message");
+    let letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    console.log(message.innerText.split(''))
+    document.addEventListener("DOMContentLoaded", () => {
+        let iterations = 0;
+        let interval = setInterval(() => {
+            let newMsg = message.innerText.split("")
+                .map((value, index) => {
+                    if (index < iterations) {
+                        return message.dataset.value[index];
+                    }
+                    return letters[Math.floor(Math.random() * 26)];
+                })
+                .join("");
+
+            message.innerText = newMsg;
+            if (iterations >= message.dataset.value.length) {
+                clearInterval(interval);
+            }
+            iterations += 1 / 3;
+        }, 30)
+
+    })
+</script>
+{% endblock %}

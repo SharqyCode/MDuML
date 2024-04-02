@@ -1,0 +1,43 @@
+section {
+    height: calc(100vh - 110px);
+}
+
+.card-one {
+    transform: translateX(-200px);
+
+}
+
+.card-two {
+    transform: translateX(200px);
+}
+
+.card-one,
+.card-two {
+    animation-range-end: 400px;
+}
+
+.card-three {
+    transform: translateY(200px);
+    animation-range-end: 150px;
+
+}
+
+.card-one,
+.card-two,
+.card-three {
+    opacity: 0;
+    animation-name: fade-in;
+    animation-timeline: view();
+    animation-range-start: 0px;
+    animation-fill-mode: forwards;
+    animation-timing-function: ease-out;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    @keyframes fade-in {
+        to {
+            transform: translate(0px);
+            opacity: 1;
+        }
+    }
+}

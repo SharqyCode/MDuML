@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="{{ url_for('static',
+                    filename='assets/logo/logo-no-background.png' ) }}" type="image/x-icon">
+    {% block styles %}{% endblock %}
+    <link rel="stylesheet" href="{{ url_for('static',
+                    filename='assets/css/bubble-bg.css' ) }}">
+    <link rel="stylesheet" href={{ url_for('static', filename='assets/css/main.css' ) }}>
+    <!-- Start Google Fonts -->
+    <!-- <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+        rel="stylesheet"> -->
+    <!-- End Google Fonts -->
+    <title>{% block title %}{% endblock %}</title>
+</head>
+
+<body>
+    <div class="bubble-container">
+        <div class="bubbles">
+            <span style="--i:10"></span>
+            <span style="--i:14"></span>
+            <span style="--i:12"></span>
+            <span style="--i:15"></span>
+            <span style="--i:27"></span>
+            <span style="--i:19"></span>
+            <span style="--i:13"></span>
+            <span style="--i:24"></span>
+            <span style="--i:26"></span>
+            <span style="--i:18"></span>
+            <span style="--i:13"></span>
+            <span style="--i:17"></span>
+            <span style="--i:25"></span>
+            <span style="--i:27"></span>
+            <!-- <span style="--i:12"></span> -->
+            <!-- <span style="--i:11"></span>
+            <span style="--i:14"></span>
+            <span style="--i:23"></span>
+            <span style="--i:28"></span>
+            <span style="--i:15"></span> -->
+            <!-- <span style="--i:21"></span>
+            <span style="--i:20"></span>
+            <span style="--i:18"></span>
+            <span style="--i:12"></span>
+            <span style="--i:26"></span>
+            <span style="--i:10"></span> -->
+        </div>
+    </div>
+    <nav class="navbar navbar-expand-lg bg-primary sticky-top p-0" data-bs-theme="dark">
+        <div class="container-fluid">
+            <a class="navbar-brand me-0" href="#"><img class="" width="100" src={{ url_for('static',
+                    filename='assets/logo/logo-white-no-bg.png' ) }} alt=""></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav text-center">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Docs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/analyze">Analyze</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">About Us</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    {% block content%}
+    {% endblock%}
+    <script src={{ url_for('static', filename='/node_modules/@popperjs/core/dist/umd/popper.min.js' ) }}></script>
+    <script src={{ url_for('static', filename='/node_modules/bootstrap/dist/js/bootstrap.min.js' ) }}></script>
+    {% block scripts %}{% endblock %}
+</body>
+
+</html>
