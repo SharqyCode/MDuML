@@ -11,51 +11,111 @@ Analyze
 
 {% block content %}
 <main class="container d-flex flex-column justify-content-center align-items-center">
-    <form class="needs-validation d-flex justify-content-center align-items-center" action="/analyze" method="post"
+    <h2 class="text-center mb-4 mt-4">Analyze</h2>
+    <form class="needs-validation relative" action="/analyze" method="post"
         novalidate enctype="multipart/form-data">
-        <div class="row align-items-end">
-            <div class="col-auto">
+        <div class="">
+            <div class="text-start">
                 <label for="formFile" class="form-label">Upload file for analysis</label>
                 <input class="form-control border border-primary" type="file" name="file" required>
                 <div class="invalid-feedback position-fixed">
                     Please select a file.
                 </div>
             </div>
-            <div class="col-auto">
-                <button type="submit" class="btn btn-primary">Send</button>
-            </div>
         </div>
+        <div id="analysis_type" class=" mt-4 ">
+            <label class="form-label">Select type of analysis</label>
+            <div class="btn-group d-flex" role="group" aria-label="Basic radio toggle button group">
+                <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked>
+                <label class="btn btn-outline-primary" for="btnradio1">Static</label>
+                <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off">
+                <label class="btn btn-outline-primary" for="btnradio2">Dynamic</label>
+            </div>
+            <p id="analysis_desc" class="mt-4 mx-auto text-start">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ea et reiciendis iusto tenetur autem ipsa dolor perferendis eaque. Incidunt consectetur ipsum rem! Fugit, ab? Culpa laudantium dicta omnis eius rem?</p>
+        </div>
+        <button type="submit" class="btn btn-primary">Send</button>
+        <li id="note" class="mt-4">Note: both static and dynamic analyses provide a report by VirusTotal</li>
     </form>
     {% if result %}
-
-    <div id="results" class="mt-5 fs-2 fw-bold "></div>
-    <div class="alert alert-dismissible alert-success">
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        This is an image of: <strong> {{ result }}</strong>
-    </div>
-
+        <a href="#results" class="go-down mt-2">
+            ⬇️
+        </a>
     {% endif %}
 </main>
+{% if result %}
+    {% if result == 'legitimate' %} 
+        {% set bg_color = "bg-success" %} 
+    {% else %} 
+        {% set bg_color = "bg-danger" %}  
+    {% endif %}
+    <div id="results" class="mt-5 fs-2 fw-bold "></div>
+    <h2 class="text-center mb-5">VERDICT</h2>
+    <div class="text-center">
+    <div class="{{ bg_color }} text-white mx-auto" style="font-size: 1.5rem; width: fit-content; padding: 2rem 4rem; margin-bottom: 6rem;">This file is: <strong> {{ result }}</strong></div>
+    </div>
+    
+    <section id="VT_report">
+        <h2 class="text-center mb-5">MITRE Report</h2>
+        {% if report %}
+            {% for vendor in report %}
+            <div class="overflow-x-hidden" style="padding: 0 8rem;">
+                <div class="card-row overflow-x-scroll align-items-center mb-4" style="max-width: 100%; white-space: nowrap;">
+                    <h3 class="text-start">Sandbox: {{ vendor }}</h3>
+                    {% for tactic in report[vendor]['tactics'] %}
+                        <div class="card text-white bg-primary mb-3 col d-inline-block" style="width: 24rem; white-space: wrap; height: 260px;">
+                            <div class="card-body">
+                            <h4 class="card-title pt-2">{{ tactic['name']}}</h4>
+                            <p class="card-text">ID: {{ tactic['id']}}</p>
+                            <p class="card-text">Link: <a class="text-white" href="{{ tactic['link']}}">{{ tactic['link']}}</a></p>
+                            <button type="button" class="btn btn-secondary">Details</button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+        <p>No Report found</p>
+        {% endif %}
+    </section>
+
+{% endif %}
 <script>
+    var forms = document.querySelectorAll('.needs-validation');
     (function () {
         'use strict'
 
         // Fetch all the forms we want to apply custom Bootstrap validation styles to
-        var forms = document.querySelectorAll('.needs-validation')
 
         // Loop over them and prevent submission
         Array.prototype.slice.call(forms)
             .forEach(function (form) {
                 form.addEventListener('submit', function (event) {
                     if (!form.checkValidity()) {
-                        event.preventDefault()
-                        event.stopPropagation()
+                        event.preventDefault();
+                        event.stopPropagation();
                     }
 
-                    form.classList.add('was-validated')
+                    form.classList.add('was-validated');
                 }, false)
             })
     })()
+
+    const staticDesc = "Static Analysis: file attributes are extracted and passed into a trained machine learning model <strong>without</strong> executing it."
+    const dynamicDesc = "Dynamic Analysis: file is executed in an isolated environment, its behavior is analyzed and passed int a machine learning model"
+    const radios = forms[0].elements['btnradio']
+    let analysisDesc = document.getElementById("analysis_desc");
+    analysisDesc.innerHTML = staticDesc;
+    radios.forEach(radio => {
+        radio.addEventListener("change", ()=>{
+            const radioChecked = document.querySelector('input[name="btnradio"]:checked');
+            const labelChecked = document.querySelector(`label[for="${radioChecked.id}"]`).textContent;
+            console.log(labelChecked);
+            labelChecked == 'Static'?  analysisDesc.innerHTML = staticDesc: analysisDesc.innerHTML = dynamicDesc;
+            
+        })
+    });
+
 </script>
 
 {% endblock %}

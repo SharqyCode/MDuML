@@ -1,15 +1,13 @@
 import os
-from tensorflow import keras
-import matplotlib.pyplot as plt
-from sklearn.metrics import accuracy_score,confusion_matrix,classification_report
-from sklearn.ensemble import RandomForestClassifier
-import numpy as np
-import cv2
 import pickle
 import pefile
 import math
+import requests
+import json
+import hashlib
 
 from flask import Flask, render_template, request
+
 app = Flask(__name__)
 
 path = os.getcwd()
@@ -20,32 +18,40 @@ if not os.path.isdir(UPLOAD_FOLDER):
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+# r = requests.get("https://4855-102-44-153-223.ngrok-free.app/tasks/report/7", headers={"Authorization": "Bearer wJJR0WHus5-J0a5HClHnCA"})
+# report = r.json()
+# if report:
+#     print(report)
+
+
 
 @app.route("/")
 def home():
     print(app.config['UPLOAD_FOLDER'])
+    
     return render_template("home.html")
 
 @app.route("/analyze", methods=["GET", "POST"])
 def analyze():
     if request.method == "GET":
         return render_template("analyze.html")
-    else:
-        if 'file' not in request.files:
-            return 'No file part'
+    # if POST
+    if 'file' not in request.files:
+        return 'No file part'
 
-        file = request.files['file']
+    file = request.files['file']
 
-        if file.filename == '':
-            return 'No selected file'
+    if file.filename == '':
+        return 'No selected file'
 
-        if file:
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], file.filename))
+    if file:
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], file.filename))
 
-#malware features dictionary
+    #malware features dictionary
     model_features = {}
 
-    malware_file = file.filename
+    malware_file = f"uploads\\{file.filename}"
+    
 
     pe = pefile.PE(malware_file)
 
@@ -148,7 +154,6 @@ def analyze():
     sectionsNb = pe.FILE_HEADER.NumberOfSections
     model_features["SectionsNb"] = sectionsNb
 
-    
     def calculate_entropy(data):
         entropy = 0
         if len(data) > 0:
@@ -469,7 +474,7 @@ def analyze():
         except (AttributeError, KeyError, IndexError):
             version_info_size = 0
         return version_info_size
-
+    
     model_features["VersionInformationSize"] = get_version_info_size(pe)
 
 
@@ -488,7 +493,62 @@ def analyze():
     #prediciting if the PE is malicious or not based on the extracted features
     res= clf.predict([pe_features])[0]
     print ('The file is %s' % (['malicious', 'legitimate'][res]))
-    return render_template("analyze.html", result=res)
+
+    report = mitre_request(f"uploads\\{file.filename}")
+    return render_template("analyze.html", result=(['malicious', 'legitimate'][res]), report=report)
         
 
 
+
+def get_file_hash(filepath):
+    with open(filepath, 'rb', buffering=0) as f:
+        return hashlib.file_digest(f, 'sha256').hexdigest()
+
+def mitre_request(filepath):
+    file_hash = get_file_hash(filepath)
+    url = f"https://www.virustotal.com/api/v3/files/{file_hash}/behaviour_mitre_trees"
+
+    headers = {
+        "accept": "application/json",
+        "x-apikey": "eced67f4d33ce10ee4ae0e4b035d6bc3100e85f6fc956661f368ada6eabea790"
+    }
+
+    response = requests.get(url, headers=headers)
+
+    print(response.text)
+
+
+
+
+
+
+
+
+
+
+ ##############################
+    # with open("reports/report.json", "r") as json_file:
+    #     report = json.load(json_file)['data']
+    #     for vendor in report:
+    #         if report[vendor]['tactics']:
+    #             print(f"<< {vendor} >>")
+    #             for tactic in report[vendor]['tactics']:
+    #                 print(tactic['name'])
+    #                 print(tactic['id'])
+    #                 print(tactic['link'])
+    #                 print("|||||")
+    #                 print("|||||")
+    #                 print("|||||")
+    #                 if report[vendor]['tactics'][0]['techniques']:
+    #                     # print(f"-- {tactic} --")
+    #                     for technique in report[vendor]['tactics'][0]['techniques']:
+    #                         print(technique['name'])
+    #                         print(technique['id'])
+    #                         print(technique['link'])
+    #                         print("=" * 20)
+    #                 print("*" * 100)
+
+                # if report[vendor]:
+                # print(report[vendor]['tactics'][0]['techniques'][0]['name'])
+                # print(report[vendor]['tactics'][0]['techniques'][0]['id'])
+                # print(report[vendor]['tactics'][0]['techniques'][0]['link'])
