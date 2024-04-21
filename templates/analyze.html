@@ -12,7 +12,7 @@ Analyze
 {% block content %}
 <main class="container d-flex flex-column justify-content-center align-items-center">
     <h2 class="text-center mb-4 mt-4">Analyze</h2>
-    <form class="needs-validation relative" action="/analyze" method="post"
+    <form class="needs-validation relative" action="/analyze/static" method="post"
         novalidate enctype="multipart/form-data">
         <div class="">
             <div class="text-start">
@@ -43,8 +43,8 @@ Analyze
     {% endif %}
 </main>
 {% if result %}
-    {% if result == 'legitimate' %} 
-        {% set bg_color = "bg-success" %} 
+    {% if result == 'Legitimate' %} 
+        {% set bg_color = "bg-success" %}
     {% else %} 
         {% set bg_color = "bg-danger" %}  
     {% endif %}
@@ -66,7 +66,7 @@ Analyze
                             <div class="card-body">
                             <h4 class="card-title pt-2">{{ tactic['name']}}</h4>
                             <p class="card-text">ID: {{ tactic['id']}}</p>
-                            <p class="card-text">Link: <a class="text-white" href="{{ tactic['link']}}">{{ tactic['link']}}</a></p>
+                            <p class="card-text">Link: <a class="text-white" target="_blank" href="{{ tactic['link']}}">{{ tactic['link']}}</a></p>
                             <button type="button" class="btn btn-secondary">Details</button>
                             </div>
                         </div>
@@ -75,7 +75,7 @@ Analyze
             </div>
             {% endfor %}
         {% else %}
-        <p>No Report found</p>
+        <p class="text-center">No Report found</p>
         {% endif %}
     </section>
 
@@ -111,7 +111,16 @@ Analyze
             const radioChecked = document.querySelector('input[name="btnradio"]:checked');
             const labelChecked = document.querySelector(`label[for="${radioChecked.id}"]`).textContent;
             console.log(labelChecked);
-            labelChecked == 'Static'?  analysisDesc.innerHTML = staticDesc: analysisDesc.innerHTML = dynamicDesc;
+            if (labelChecked == 'Static') 
+            {
+                analysisDesc.innerHTML = staticDesc;
+                forms[0].action = "/analyze/static"
+            }
+            else 
+            {
+                analysisDesc.innerHTML = dynamicDesc;
+                forms[0].action = "/analyze/dynamic"
+            }
             
         })
     });
